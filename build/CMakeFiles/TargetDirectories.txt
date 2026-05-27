@@ -1,0 +1,3 @@
+/Users/shoryarawal/Toy_Scheme_Compiler/build/CMakeFiles/scheme_compiler.dir
+/Users/shoryarawal/Toy_Scheme_Compiler/build/CMakeFiles/edit_cache.dir
+/Users/shoryarawal/Toy_Scheme_Compiler/build/CMakeFiles/rebuild_cache.dir
