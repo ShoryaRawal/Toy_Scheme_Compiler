@@ -40,7 +40,7 @@ namespace tscm {
 					break;
 				case ')':
 					advance();
-					tokens.emplace_back(TokenKind::RightParen, "(");
+					tokens.emplace_back(TokenKind::RightParen, ")");
 					break;
 				case '\'':
 					advance();
