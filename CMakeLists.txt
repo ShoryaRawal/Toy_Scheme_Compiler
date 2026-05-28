@@ -9,6 +9,7 @@ add_executable(
 	scheme_compiler
 	src/main.cpp
 	src/lexer/lexer.cpp
+	src/syntax/parser.cpp
 )
 
 target_include_directories(
