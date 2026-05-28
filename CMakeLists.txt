@@ -10,6 +10,7 @@ add_executable(
 	src/main.cpp
 	src/lexer/lexer.cpp
 	src/syntax/parser.cpp
+	src/syntax/syntax_printer.cpp
 )
 
 target_include_directories(

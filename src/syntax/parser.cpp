@@ -5,9 +5,22 @@ namespace tscm{
 	Parser::Parser(const std::vector<Token> & tokens)
 		: tokens_(tokens), current_(0) {}
 
+	
+	//-----REDUNDANT CODE----------
 	SExprPtr Parser::parse() { 
 		return parse_expression(); 
 	}
+	//-----REMOVE AFTER UPDATE-----
+	
+	Program Parser::parse_program(){
+		Program program;
+
+		while(!is_at_end())
+			program.expressions.push_back(parse_expression());
+	
+		return program;
+	}
+
 
 	bool Parser::is_at_end() const {
 		return peek().kind == TokenKind::EndOfFile;

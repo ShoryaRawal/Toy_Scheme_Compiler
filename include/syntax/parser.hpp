@@ -5,12 +5,15 @@
 
 #include "token.hpp"
 #include "syntax/s_expr.hpp"
+#include "syntax/program.hpp"
 
 namespace tscm{
 	class Parser{
 		public:
 			explicit Parser(const std::vector<Token> & tokens);
-			SExprPtr parse();
+			SExprPtr parse(); //REDUNDANT CODE
+
+			Program parse_program();
 
 		private:
 			const std::vector<Token> & tokens_;
