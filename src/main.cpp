@@ -1,8 +1,10 @@
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "lexer.hpp"
-#include "token.hpp"
+#include "syntax/s_expr.hpp"
+#include "syntax/parser.hpp"
 
 int main(){
 	const std::string source = R"(
