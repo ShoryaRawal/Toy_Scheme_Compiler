@@ -12,7 +12,7 @@ namespace tscm{
 
 	struct IntegerExpr { std::int64_t value; };
 	struct SymbolExpr { std::string name; };
-	struct ListExpr { std::vector<SExprPtr>; };
+	struct ListExpr { std::vector<SExprPtr> elements; };
 	struct QuoteExpr { SExprPtr expression; };
 
 	using SExprValue = std::variant<
@@ -24,8 +24,6 @@ namespace tscm{
 
 	struct SExpr{
 		SExprValue value;
-
-		template<typename T>;
-		explicit SExpr(T expr) : value(std::move(expr)) {}
+		template<typename T> explicit SExpr(T expr) : value(std::move(expr)) {}
 	};
 }

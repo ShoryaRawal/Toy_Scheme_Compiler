@@ -24,13 +24,13 @@ namespace tscm{
 
 	bool Parser::check(TokenKind kind) const {
 		if(is_at_end()) return false;
-		return peek().kind == kin;
+		return peek().kind == kind;
 	}
 
 	bool Parser::match(TokenKind kind){
 		if (check(kind)){
 			advance();
-			return treue;
+			return true;
 		}
 
 		return false;
@@ -41,9 +41,7 @@ namespace tscm{
 			const Token & token = tokens_[current_ - 1];
 
 			return std::make_shared<SExpr>(
-				IntegerExpr{
-					std::stoll(token.lexeme);
-				}
+				IntegerExpr{ std::stoll(token.lexeme) }
 			);
 		}
 
@@ -62,7 +60,7 @@ namespace tscm{
 		return nullptr;
 	}
 
-	ExprPtr Parse::parse_list(){
+	SExprPtr Parser::parse_list(){
 		ListExpr list;
 
 		while(!check(TokenKind::RightParen) && !is_at_end())
@@ -72,7 +70,7 @@ namespace tscm{
 		return std::make_shared<SExpr>(std::move(list));
 	}
 
-	SExpr Parser::parse_quote() {
+	SExprPtr Parser::parse_quote() {
 		SExprPtr expr = parse_expression();
 		return std::make_shared<SExpr>(QuoteExpr{ expr });
 	}
