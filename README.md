@@ -2,20 +2,24 @@
 This project is a simple compiler for a scheme-like toy language for educational purposes.
 
 # Current Filestructure
+
 ```
-├── CMakeLists.txt
+.
 ├── include
-│   ├── lexer.hpp
 │   ├── syntax
 │   │   ├── parser.hpp
 │   │   └── s_expr.hpp
+│   ├── lexer.hpp
 │   └── token.hpp
+├── src
+│   ├── lexer
+│   │   └── lexer.cpp
+│   ├── syntax
+│   │   └── parser.cpp
+│   └── main.cpp
+├── CMakeLists.txt
 ├── README.md
-└── src
-    ├── lexer
-    │   └── lexer.cpp
-    ├── main.cpp
-    └── syntax
-        └── parser.cpp
+└── update_readme.sh
 
+6 directories, 10 files
 ```
