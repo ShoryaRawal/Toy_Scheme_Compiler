@@ -16,6 +16,9 @@ add_executable(
 	src/core/core_validator.cpp
 	src/support/error.cpp
 	src/support/panic.cpp
+	src/runtime/value.cpp
+	src/runtime/environment.cpp
+	src/runtime/evaluator.cpp
 )
 
 target_include_directories(

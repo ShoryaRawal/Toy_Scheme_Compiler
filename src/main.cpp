@@ -11,7 +11,7 @@ int main(){
 	const std::string source = R"(
 		(define max
 			(lambda (a b)
-				(if (> a 
+				(if (> a b)
 					a
 					b)))
 
