@@ -6,16 +6,16 @@ namespace tscm{
 
 	void CorePrinter::print_program(const CoreProgram & program) {
 		for(const auto & expr : program.expressions){
-			print_expressions(expr);
+			print_expression(expr);
 		}
 	}
 
-	void CorePrinter::print_expressions(const CoreExprPtr & expr, int indent){
+	void CorePrinter::print_expression(const CoreExprPtr & expr, int indent){
 		const std::string padding(indent, ' ');
 
 		std::visit(
 			[&] (const auto & node){
-				usign T = std::decay_t<decltype(node)>;
+				using T = std::decay_t<decltype(node)>;
 
 				if constexpr (std::is_same_v<T, CoreIntegerExpr>) 
 					output_ << padding << "Integer(" << node.value << ")\n";
@@ -25,7 +25,7 @@ namespace tscm{
 					output_ << padding << "Define(" << node.name << ")\n";
 					print_expression(node.value, indent + 2);
 				} else if constexpr (std::is_same_v<T, CoreLambdaExpr>){
-					output_ << padding << "Lambda\n"
+					output_ << padding << "Lambda\n";
 					for (const auto & param : node.parameters)
 						output_ << padding << "  Param(" << param << "\n";
 					for (const auto & body : node.body)
@@ -35,8 +35,8 @@ namespace tscm{
 					print_expression(node.callee, indent + 2);
 
 					for(const auto & arg : node.arguments) 
-						print_expression(arf, indent + 2);
-				} else if constexpr (std::is_same_v<T, CoreIfExpr) {
+						print_expression(arg, indent + 2);
+				} else if constexpr (std::is_same_v<T, CoreIfExpr>) {
 					output_ << padding << "If\n";
 					print_expression(node.condition, indent + 2);
 					print_expression(node.then_branch, indent + 2);

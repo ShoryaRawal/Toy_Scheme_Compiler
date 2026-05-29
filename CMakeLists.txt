@@ -11,6 +11,8 @@ add_executable(
 	src/lexer/lexer.cpp
 	src/syntax/parser.cpp
 	src/syntax/syntax_printer.cpp
+	src/core/core_printer.cpp
+	src/core/lowerer.cpp
 )
 
 target_include_directories(

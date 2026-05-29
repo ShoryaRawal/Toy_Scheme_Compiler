@@ -33,7 +33,7 @@ namespace tscm {
 	};
 
 	struct CoreLambdaExpr {
-		std::vector<std::string> parameteres;
+		std::vector<std::string> parameters;
 		std::vector<CoreExprPtr> body;
 	};
 

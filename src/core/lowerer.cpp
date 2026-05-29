@@ -1,5 +1,6 @@
 #include "core/lowerer.hpp"
 #include <stdexcept>
+#include <variant>
 
 namespace tscm {
 	CoreProgram Lowerer::lower_program(const SyntaxProgram & program){
@@ -14,12 +15,12 @@ namespace tscm {
 		return std::visit(
 			[&](const auto & node) -> CoreExprPtr{
 				using T = std::decay_t<decltype(node)>;
-				if constexpr (std::is_same_v<T, IntegerExpr>){
-					return std::make_shared<CoreExpr>(tscm::IntegerExpr{ node.value });
-				} else if constexpr (std::is_same_v<T, SymbolExpr>){
-					return std::make_shared<CoreExpr>(VariableExpr{ node.name });
-				} else if constexpr (std::is_same_v<T, QuoteExpr>){
-					return std::make_shared<CoreExpr>(tscm::QuoteExpr{ node.expression });
+				if constexpr (std::is_same_v<T, CoreIntegerExpr>){
+					return std::make_shared<CoreExpr>(tscm::CoreIntegerExpr{ node.value });
+				} else if constexpr (std::is_same_v<T, CoreVariableExpr>){
+					return std::make_shared<CoreExpr>(tscm::CoreVariableExpr{ node.name });
+				} else if constexpr (std::is_same_v<T, CoreQuoteExpr>){
+					return std::make_shared<CoreExpr>(tscm::CoreQuoteExpr{ node.expression });
 				} else if constexpr (std::is_same_v<T, ListExpr>){
 					return lower_list(node);
 				} else { return nullptr; }
@@ -28,7 +29,7 @@ namespace tscm {
 		);
 	}
 
-	CoreExprPtr Lowerer::lower_list(const listExpr & list){
+	CoreExprPtr Lowerer::lower_list(const ListExpr & list){
 		if (list.elements.empty()) {
 			throw std::runtime_error("ERROR: List is empty.");
 		}
@@ -46,13 +47,13 @@ namespace tscm {
 	CoreExprPtr Lowerer::lower_define(const ListExpr & list) {
 		const auto & symbol = std::get_if<SymbolExpr>(list.elements[1] -> value);
 		return std::make_shared<CoreExpr>(
-			DefineExpr{ symbol.name, lower_expression(list.elements[2]) }
+			CoreDefineExpr{ symbol.name, lower_expression(list.elements[2]) }
 		);
 	}
 
 	CoreExprPtr Lowerer::lower_if(const ListExpr & list){
 		return std::make_shared<CoreExpr>(
-			IfExpr{
+			CoreIfExpr{
 				lower_expression(list.elements[1]),
 				lower_expression(list.elements[2]),
 				lower_expression(list.elements[3])
@@ -61,7 +62,7 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_lambda(const ListExpr & list){
-		LambdaExpr lambda;
+		CoreLambdaExpr lambda;
 
 		const auto & params = std::get<ListExpr>(list.elements[1] -> value);
 		for (const auto & param : params.elements){
@@ -77,7 +78,7 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_call(const ListExpr & list){
-		CallExpr call;
+		CoreCallExpr call;
 		call.callee = lower_expression(list.elements[0]);
 
 		for (std::size_t i = 1; i < list.elements.size(); ++i){

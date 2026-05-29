@@ -3,6 +3,7 @@
 #include "core/core_expr.hpp"
 #include "syntax/s_expr.hpp"
 #include "syntax/syntax_program.hpp"
+#include "core/core_program.hpp"
 
 namespace tscm{
 	class Lowerer{
