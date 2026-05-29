@@ -6,14 +6,22 @@ This project is a simple compiler for a scheme-like toy language for educational
 ```
 .
 ├── include
+│   ├── core
+│   │   ├── core_expr.hpp
+│   │   ├── core_printer.hpp
+│   │   ├── core_program.hpp
+│   │   └── lowerer.hpp
 │   ├── syntax
 │   │   ├── parser.hpp
-│   │   ├── program.hpp
 │   │   ├── s_expr.hpp
-│   │   └── syntax_printer.hpp
+│   │   ├── syntax_printer.hpp
+│   │   └── syntax_program.hpp
 │   ├── lexer.hpp
 │   └── token.hpp
 ├── src
+│   ├── core
+│   │   ├── core_printer.cpp
+│   │   └── lowerer.cpp
 │   ├── lexer
 │   │   └── lexer.cpp
 │   ├── syntax
@@ -24,5 +32,5 @@ This project is a simple compiler for a scheme-like toy language for educational
 ├── README.md
 └── update_readme.sh
 
-6 directories, 13 files
+8 directories, 19 files
 ```

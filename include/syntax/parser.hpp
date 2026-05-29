@@ -4,16 +4,16 @@
 #include <vector>
 
 #include "token.hpp"
-#include "syntax/s_expr.hpp"
-#include "syntax/program.hpp"
+//#include "syntax/s_expr.hpp"
+#include "syntax/syntax_program.hpp"
 
 namespace tscm{
 	class Parser{
 		public:
 			explicit Parser(const std::vector<Token> & tokens);
-			SExprPtr parse(); //REDUNDANT CODE
+			//SExprPtr parse(); //REDUNDANT CODE
 
-			Program parse_program();
+			SyntaxProgram parse_program();
 
 		private:
 			const std::vector<Token> & tokens_;

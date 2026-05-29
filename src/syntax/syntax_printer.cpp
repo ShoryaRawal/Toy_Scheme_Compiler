@@ -4,7 +4,7 @@
 namespace tscm {
 	SyntaxPrinter::SyntaxPrinter(std::ostream & output) : output_(output) {}
 
-	void SyntaxPrinter::print_program(const Program & program){
+	void SyntaxPrinter::print_program(const SyntaxProgram & program){
 		for (const auto & expr : program.expressions) print_expression(expr);
 	}
 

@@ -1,10 +1,9 @@
 #include <iostream>
-#include <memory>
-#include <vector>
 
 #include "lexer.hpp"
 #include "syntax/parser.hpp"
-#include "syntax/syntax_printer.hpp"
+#include "core/core_printer.hpp"
+#include "core/lowerer.hpp"
 
 
 int main(){
@@ -13,6 +12,9 @@ int main(){
 			(lambda (x)
 				(* x x)))
 		'(1 2 3)
+
+		(if 1 > a
+			(print (a)))
 
 		(square 5)
 	)";
@@ -23,8 +25,14 @@ int main(){
 	tscm::Parser parser(tokens);
 	const auto program = parser.parse_program();
 
-	tscm::SyntaxPrinter printer(std::cout);
-	printer.print_program(program);
+
+	const auto syntax_program = parser.parse_program();
+
+	tscm::Lowerer lowerer;
+	const auto core_program = lowerer.lower_program(syntax_program);
+
+	tscm::CorePrinter printer(std::cout);
+	printer.print_program(core_program);
 
 	return 0;
 }

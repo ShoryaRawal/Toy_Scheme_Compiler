@@ -7,13 +7,13 @@ namespace tscm{
 
 	
 	//-----REDUNDANT CODE----------
-	SExprPtr Parser::parse() { 
-		return parse_expression(); 
-	}
+	//SExprPtr Parser::parse() { 
+	//	return parse_expression(); 
+	//}
 	//-----REMOVE AFTER UPDATE-----
 	
-	Program Parser::parse_program(){
-		Program program;
+	SyntaxProgram Parser::parse_program(){
+		SyntaxProgram program;
 
 		while(!is_at_end())
 			program.expressions.push_back(parse_expression());
