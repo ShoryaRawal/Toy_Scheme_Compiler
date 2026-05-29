@@ -13,6 +13,9 @@ add_executable(
 	src/syntax/syntax_printer.cpp
 	src/core/core_printer.cpp
 	src/core/lowerer.cpp
+	src/core/core_validator.cpp
+	src/support/error.cpp
+	src/support/panic.cpp
 )
 
 target_include_directories(

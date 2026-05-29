@@ -4,13 +4,14 @@
 #include "syntax/parser.hpp"
 #include "core/core_printer.hpp"
 #include "core/lowerer.hpp"
+#include "core/core_validator.hpp"
 
 
 int main(){
 	const std::string source = R"(
 		(define max
 			(lambda (a b)
-				(if (> a b)
+				(if (> a 
 					a
 					b)))
 
@@ -27,6 +28,14 @@ int main(){
 
 	tscm::Lowerer lowerer;
 	const auto core_program = lowerer.lower_program(syntax_program);
+
+	tscm::CoreValidator validator;
+	const auto errors = validator.validate(core_program);
+	if(!errors.empty()){
+		std::cout << "Validation Failed" << "\n";
+		for (const auto & error : errors) std::cout << "error: " << error.message << "\n";
+		return 1;
+	}
 
 	tscm::CorePrinter printer(std::cout);
 	printer.print_program(core_program);

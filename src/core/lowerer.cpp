@@ -31,6 +31,7 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_list(const ListExpr & list){
+
 		if (list.elements.empty()) {
 			throw std::runtime_error("ERROR: List is empty.");
 		}
@@ -46,11 +47,17 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_define(const ListExpr & list) {
+		if (list.elements.size() != 3) {
+			throw std::runtime_error("define expects exactly 2 operands");
+		}
 		const auto& symbol = std::get<SymbolExpr>(list.elements[1]->value);
 		return std::make_shared<CoreExpr>(CoreDefineExpr{symbol.name, lower_expression(list.elements[2])});
 	}
 
 	CoreExprPtr Lowerer::lower_if(const ListExpr & list){
+		if (list.elements.size() != 4) {
+			throw std::runtime_error( "if expects exactly 3 operands");
+		}
 		return std::make_shared<CoreExpr>(
 			CoreIfExpr{
 				lower_expression(list.elements[1]),
@@ -61,6 +68,10 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_lambda(const ListExpr & list){
+		if (list.elements.size() < 3) {
+			throw std::runtime_error( "lambda expects less than 2 operands");
+		}
+
 		CoreLambdaExpr lambda;
 
 		const auto & params = std::get<ListExpr>(list.elements[1] -> value);
@@ -79,7 +90,6 @@ namespace tscm {
 	CoreExprPtr Lowerer::lower_call(const ListExpr & list){
 		CoreCallExpr call;
 
-		std::cout << list.elements[0] << "\n";
 		call.callee = lower_expression(list.elements[0]);
 
 		for (std::size_t i = 1; i < list.elements.size(); ++i){
