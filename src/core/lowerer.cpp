@@ -1,6 +1,7 @@
 #include "core/lowerer.hpp"
 #include <stdexcept>
 #include <variant>
+#include <iostream>
 
 namespace tscm {
 	CoreProgram Lowerer::lower_program(const SyntaxProgram & program){
@@ -15,11 +16,11 @@ namespace tscm {
 		return std::visit(
 			[&](const auto & node) -> CoreExprPtr{
 				using T = std::decay_t<decltype(node)>;
-				if constexpr (std::is_same_v<T, CoreIntegerExpr>){
+				if constexpr (std::is_same_v<T, IntegerExpr>){
 					return std::make_shared<CoreExpr>(tscm::CoreIntegerExpr{ node.value });
-				} else if constexpr (std::is_same_v<T, CoreVariableExpr>){
+				} else if constexpr (std::is_same_v<T, SymbolExpr>){
 					return std::make_shared<CoreExpr>(tscm::CoreVariableExpr{ node.name });
-				} else if constexpr (std::is_same_v<T, CoreQuoteExpr>){
+				} else if constexpr (std::is_same_v<T, QuoteExpr>){
 					return std::make_shared<CoreExpr>(tscm::CoreQuoteExpr{ node.expression });
 				} else if constexpr (std::is_same_v<T, ListExpr>){
 					return lower_list(node);
@@ -45,10 +46,8 @@ namespace tscm {
 	}
 
 	CoreExprPtr Lowerer::lower_define(const ListExpr & list) {
-		const auto & symbol = std::get_if<SymbolExpr>(list.elements[1] -> value);
-		return std::make_shared<CoreExpr>(
-			CoreDefineExpr{ symbol.name, lower_expression(list.elements[2]) }
-		);
+		const auto& symbol = std::get<SymbolExpr>(list.elements[1]->value);
+		return std::make_shared<CoreExpr>(CoreDefineExpr{symbol.name, lower_expression(list.elements[2])});
 	}
 
 	CoreExprPtr Lowerer::lower_if(const ListExpr & list){
@@ -79,6 +78,8 @@ namespace tscm {
 
 	CoreExprPtr Lowerer::lower_call(const ListExpr & list){
 		CoreCallExpr call;
+
+		std::cout << list.elements[0] << "\n";
 		call.callee = lower_expression(list.elements[0]);
 
 		for (std::size_t i = 1; i < list.elements.size(); ++i){

@@ -1,10 +1,10 @@
 #include "syntax/parser.hpp"
 #include <memory>
+#include <iostream>
 
 namespace tscm{
 	Parser::Parser(const std::vector<Token> & tokens)
 		: tokens_(tokens), current_(0) {}
-
 	
 	//-----REDUNDANT CODE----------
 	//SExprPtr Parser::parse() { 
@@ -17,7 +17,7 @@ namespace tscm{
 
 		while(!is_at_end())
 			program.expressions.push_back(parse_expression());
-	
+		
 		return program;
 	}
 
@@ -52,7 +52,7 @@ namespace tscm{
 	SExprPtr Parser::parse_expression(){
 		if(match(TokenKind::Integer)) {
 			const Token & token = tokens_[current_ - 1];
-
+		
 			return std::make_shared<SExpr>(
 				IntegerExpr{ std::stoll(token.lexeme) }
 			);

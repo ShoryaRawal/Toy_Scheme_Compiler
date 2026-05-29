@@ -8,23 +8,20 @@
 
 int main(){
 	const std::string source = R"(
-		(define square
-			(lambda (x)
-				(* x x)))
-		'(1 2 3)
+		(define max
+			(lambda (a b)
+				(if (> a b)
+					a
+					b)))
 
-		(if 1 > a
-			(print (a)))
-
-		(square 5)
+		(max 10 20)
 	)";
 
 	tscm::Lexer lexer (source);
 	const auto tokens = lexer.tokenize();
 	
 	tscm::Parser parser(tokens);
-	const auto program = parser.parse_program();
-
+	//const auto program = parser.parse_program();
 
 	const auto syntax_program = parser.parse_program();
 

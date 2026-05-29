@@ -27,15 +27,15 @@ namespace tscm{
 				} else if constexpr (std::is_same_v<T, CoreLambdaExpr>){
 					output_ << padding << "Lambda\n";
 					for (const auto & param : node.parameters)
-						output_ << padding << "  Param(" << param << "\n";
+						output_ << padding << "  Param(" << param << ")\n";
 					for (const auto & body : node.body)
 						print_expression(body, indent + 2);
 				} else if constexpr (std::is_same_v<T, CoreCallExpr>){
 					output_ << padding << "Call\n";
 					print_expression(node.callee, indent + 2);
 
-					for(const auto & arg : node.arguments) 
-						print_expression(arg, indent + 2);
+					for(const auto& arg : node.arguments) print_expression(arg, indent + 2);
+
 				} else if constexpr (std::is_same_v<T, CoreIfExpr>) {
 					output_ << padding << "If\n";
 					print_expression(node.condition, indent + 2);
