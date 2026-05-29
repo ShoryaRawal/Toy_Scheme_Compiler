@@ -5,17 +5,13 @@
 #include "core/core_printer.hpp"
 #include "core/lowerer.hpp"
 #include "core/core_validator.hpp"
+#include "runtime/evaluator.hpp"
+#include "runtime/value.hpp"
 
 
 int main(){
 	const std::string source = R"(
-		(define max
-			(lambda (a b)
-				(if (> a b)
-					a
-					b)))
-
-		(max 10 20)
+		(/ 90 0)
 	)";
 
 	tscm::Lexer lexer (source);
@@ -39,6 +35,11 @@ int main(){
 
 	tscm::CorePrinter printer(std::cout);
 	printer.print_program(core_program);
+
+	tscm::Evaluator evaluator;
+	tscm::Value result = evaluator.evaluate_program(core_program);
+
+	std::cout << "\n\n\n RESULT: " << result.as_integer() << "\n";
 
 	return 0;
 }
