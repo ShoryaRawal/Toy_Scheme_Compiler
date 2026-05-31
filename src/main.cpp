@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
 
 #include "lexer.hpp"
 #include "syntax/parser.hpp"
@@ -10,9 +13,18 @@
 
 
 int main(){
-	const std::string source = R"(
-		(/ 90 0)
-	)";
+	const std::string source_path = "../examples/test.scm";
+	std::ifstream inputFile(source_path);
+
+	if(!inputFile.is_open()){
+		std::cerr << "File not Found" << "\n";
+		return 1;
+	}
+
+	std::stringstream buffer;
+	buffer << inputFile.rdbuf();
+
+	std::string source = buffer.str();
 
 	tscm::Lexer lexer (source);
 	const auto tokens = lexer.tokenize();

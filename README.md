@@ -5,7 +5,13 @@ This project is a simple compiler for a scheme-like toy language for educational
 
 ```
 .
+├── examples
+│   └── test.scm
 ├── include
+│   ├── backend
+│   │   ├── assembly_program.hpp
+│   │   ├── x86_emitter.hpp
+│   │   └── x86_printer.hpp
 │   ├── core
 │   │   ├── core_error.hpp
 │   │   ├── core_expr.hpp
@@ -31,6 +37,9 @@ This project is a simple compiler for a scheme-like toy language for educational
 │   ├── lexer.hpp
 │   └── token.hpp
 ├── src
+│   ├── backend
+│   │   ├── x86_emitter.cpp
+│   │   └── x86_printer.cpp
 │   ├── core
 │   │   ├── core_printer.cpp
 │   │   ├── core_validator.cpp
@@ -52,5 +61,5 @@ This project is a simple compiler for a scheme-like toy language for educational
 ├── README.md
 └── update_readme.sh
 
-12 directories, 35 files
+15 directories, 41 files
 ```
