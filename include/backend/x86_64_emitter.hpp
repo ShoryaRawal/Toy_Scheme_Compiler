@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "backend/assembly_program.hpp"
 #include "core/core_program.hpp"
@@ -16,10 +17,11 @@ namespace tscm{
 		private:
 			RegisterResult emit_expression(const CoreExprPtr & expr, AssemblyProgram & program);
 			RegisterResult emit_call(const CoreCallExpr & call, AssemblyProgram & program);
+			void release_register(const std::string & reg);
 
 			std::string allocate_register();
 
 		private:
-			std::size_t next_register_ = 0;
+			std::vector<std::string> free_registers_;
 	};
 }

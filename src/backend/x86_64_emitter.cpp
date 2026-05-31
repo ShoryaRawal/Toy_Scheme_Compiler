@@ -4,14 +4,9 @@
 #include <variant>
 
 namespace tscm{
-	namespace{
-		constexpr const char * kRegisters[] = {"rax", "rbx", "rcx", "rdx"};
-		constexpr std::size_t kRegisterCount = sizeof(kRegisters) / sizeof(kRegisters[0]);
-	}
-
 	AssemblyProgram X86_64Emitter::emit(const CoreProgram & program){
 		AssemblyProgram assembly;
-		next_register_ = 0;
+		free_registers_ = {"rdx", "rcx", "rbx", "rax"};
 
 		for (const auto & expr : program.expressions)
 			emit_expression(expr, assembly);
@@ -20,10 +15,17 @@ namespace tscm{
 	}
 
 	std::string X86_64Emitter::allocate_register() {
-		if(next_register_ >= kRegisterCount) 
-			throw std::runtime_error("temporary register pool exhausted");
+		if(free_registers_.empty()) 
+			throw std::runtime_error("x86_64 register pool exhausted");
 		
-		return kRegisters[next_register_++];
+		std::string reg = free_registers_.back();
+		free_registers_.pop_back();
+
+		return reg;
+	}
+
+	void X86_64Emitter::release_register(const std::string & reg){
+		free_registers_.push_back(reg);
 	}
 
 	RegisterResult X86_64Emitter::emit_expression(const CoreExprPtr & expr, AssemblyProgram & program){
@@ -56,25 +58,28 @@ namespace tscm{
 		RegisterResult lhs = emit_expression(call.arguments[0], program);
 		RegisterResult rhs = emit_expression(call.arguments[1], program);
 
-		if(callee -> name == "+")
+		if(callee -> name == "+"){
 			program.instructions.push_back({
 				"add", { lhs.reg, rhs.reg }
 			});
 
-		else if(callee -> name == "-")
+			release_register(rhs.reg);
+			return lhs;
+		}else if(callee -> name == "-"){
 			program.instructions.push_back({
 				"sub", { lhs.reg, rhs.reg }
 			});
-
-		else if(callee -> name == "*")
+			
+			release_register(rhs.reg);
+			return lhs;
+		}else if(callee -> name == "*"){
 			program.instructions.push_back({
 				"impl", { lhs.reg, rhs.reg }
 			});
-		else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
-		
+			release_register(rhs.reg);
+			return lhs;
+		}else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
 		else throw std::runtime_error("Unsupported operator: " + callee -> name);
-
-		return lhs;
 	}
 
 }
