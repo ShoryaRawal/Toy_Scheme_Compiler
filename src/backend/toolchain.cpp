@@ -14,7 +14,7 @@ namespace tscm{
 			throw std::runtime_error("nasm failed"); 
 
 
-		const std::string ld_command = "ld" + obj_file + "-o" + exe_file;
+		const std::string ld_command = "ld " + obj_file + " -o " + exe_file;
 		if(std::system(ld_command.c_str()) != 0)
 			throw std::runtime_error("ld failed");
 	}
