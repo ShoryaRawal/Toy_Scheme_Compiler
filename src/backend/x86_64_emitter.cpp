@@ -74,7 +74,7 @@ namespace tscm{
 			return lhs;
 		}else if(callee -> name == "*"){
 			program.instructions.push_back({
-				"impl", { lhs.reg, rhs.reg }
+				"imul", { lhs.reg, rhs.reg }
 			});
 			release_register(rhs.reg);
 			return lhs;
