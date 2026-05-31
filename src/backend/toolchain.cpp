@@ -9,7 +9,7 @@ namespace tscm{
 		const std::string & obj_file,
 		const std::string & exe_file
 	){
-		const std::string nasm_command = "nasm -f elf64" + asm_file + "-o" + obj_file;
+		const std::string nasm_command = "nasm -f elf64 " + asm_file + " -o " + obj_file;
 		if(std::system(nasm_command.c_str()) != 0) 
 			throw std::runtime_error("nasm failed"); 
 
