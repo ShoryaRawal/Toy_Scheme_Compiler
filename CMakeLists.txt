@@ -7,18 +7,28 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(
 	scheme_compiler
+
 	src/main.cpp
+	
 	src/lexer/lexer.cpp
+	
 	src/syntax/parser.cpp
 	src/syntax/syntax_printer.cpp
+	
 	src/core/core_printer.cpp
 	src/core/lowerer.cpp
 	src/core/core_validator.cpp
+	
 	src/support/error.cpp
 	src/support/panic.cpp
+	
 	src/runtime/value.cpp
 	src/runtime/environment.cpp
 	src/runtime/evaluator.cpp
+	
+	src/backend/x86_64_emitter.cpp
+	src/backend/x86_64_printer.cpp
+	src/backend/toolchain.cpp
 )
 
 target_include_directories(

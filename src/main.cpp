@@ -5,11 +5,17 @@
 
 #include "lexer.hpp"
 #include "syntax/parser.hpp"
+
 #include "core/core_printer.hpp"
 #include "core/lowerer.hpp"
 #include "core/core_validator.hpp"
+
 #include "runtime/evaluator.hpp"
 #include "runtime/value.hpp"
+
+#include "backend/x86_64_emitter.hpp"
+#include "backend/x86_64_printer.hpp"
+#include "backend/toolchain.hpp"
 
 
 int main(){
@@ -45,13 +51,21 @@ int main(){
 		return 1;
 	}
 
-	tscm::CorePrinter printer(std::cout);
-	printer.print_program(core_program);
+	tscm::CorePrinter core_printer(std::cout);
+	core_printer.print_program(core_program);
 
-	tscm::Evaluator evaluator;
-	tscm::Value result = evaluator.evaluate_program(core_program);
+	tscm::X86_64Emitter emitter;
+	tscm::AssemblyProgram assembly = emitter.emit(core_program);
 
-	std::cout << "\n\n\n RESULT: " << result.as_integer() << "\n";
+	std::ofstream asm_file("output.asm");
+
+	tscm::X86_64Printer printer(asm_file);
+	printer.print(assembly);
+
+	asm_file.close();
+
+	tscm::Toolchain toolchain;
+	toolchain.assemble_and_link("output.asm", "outout.o", "a.out");
 
 	return 0;
 }

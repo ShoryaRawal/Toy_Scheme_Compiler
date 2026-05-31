@@ -4,9 +4,9 @@
 #include <ostream>
 
 namespace tscm{
-	class X86Printer{
+	class X86_64Printer{
 		public:
-			explicit X86Printer( std::ostream & output );
+			explicit X86_64Printer( std::ostream & output );
 			void print( const AssemblyProgram & program );
 
 		private:

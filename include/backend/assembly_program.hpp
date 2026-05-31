@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
+#include "backend/assembly_instructions.hpp"
 #include <vector>
 
 namespace tscm{
-	struct AssemblyProgram{ std::vector<std::string> lines; };
+	struct AssemblyProgram{ std::vector<AssemblyInstruction> instructions; };
 }
