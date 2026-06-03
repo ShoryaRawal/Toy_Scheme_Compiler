@@ -26,6 +26,7 @@ namespace tscm{
 
 		private:
 			std::vector<std::string> free_registers_;
-			std::unordered_map<std::
+			std::unordered_map<std::string, int> stack_slots_;
+			int next_stack_offset_ = -8;
 	};
 }

@@ -8,6 +8,8 @@ namespace tscm{
 		AssemblyProgram assembly;
 		free_registers_ = {"rdx", "rcx", "rbx", "rax"};
 
+		stack_slots_.clear();
+		next_stack_offset_ = -8;
 		for (const auto & expr : program.expressions)
 			emit_expression(expr, assembly);
 
