@@ -10,8 +10,16 @@ namespace tscm{
 
 		stack_slots_.clear();
 		next_stack_offset_ = -8;
+		RegisterResult last_result;
+
 		for (const auto & expr : program.expressions)
-			emit_expression(expr, assembly);
+			last_result = emit_expression(expr, assembly);
+
+		if(!program.expressions.empty())
+			if(last_result.reg != "rax")
+				assembly.instructions.push_back({
+						"mov", { "rax", last_result.reg }
+					});
 
 		return assembly;
 	}
@@ -44,10 +52,44 @@ namespace tscm{
 					return { reg };
 				} else if constexpr (std::is_same_v<T, CoreCallExpr>){
 					return emit_call(node, program);
+				} else if constexpr (std::is_same_v<T, CoreDefineExpr>){
+					return emit_define(node, program);
+				} else if constexpr (std::is_same_v<T, CoreVariableExpr>){
+					return emit_variable(node, program);
 				} else throw std::runtime_error("x86_64 backend does not support this yet.");
 			},
 			expr -> value
 		);
+	}
+
+	RegisterResult X86_64Emitter::emit_define(const CoreDefineExpr & define, AssemblyProgram & program){
+		RegisterResult value = emit_expression(define.value, program);
+		int offset = next_stack_offset_;
+		next_stack_offset_ -= 8;
+
+		stack_slots_[define.name] = offset;
+
+		program.instructions.push_back({
+			"mov",
+			{ "[rbp" + std::to_string(offset) + "]", value.reg }
+		});
+
+		return value;
+	}
+
+	RegisterResult X86_64Emitter::emit_variable(const CoreVariableExpr & variable, AssemblyProgram & program){
+		auto it = stack_slots_.find(variable.name);
+		if(it == stack_slots_.end())
+			throw std::runtime_error("undefined variable: " + variable.name);
+
+		std::string reg = allocate_register();
+		int offset = it -> second;
+		program.instructions.push_back({
+			"mov",
+			{ reg, "[rbp" + std::to_string(offset) + "]" }
+		});
+
+		return { reg };
 	}
 
 	RegisterResult X86_64Emitter::emit_call(const CoreCallExpr & call, AssemblyProgram & program){
