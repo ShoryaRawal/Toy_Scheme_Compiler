@@ -74,7 +74,9 @@ namespace tscm{
 			{ "[rbp" + std::to_string(offset) + "]", value.reg }
 		});
 
-		return value;
+		release_register(value.reg);
+
+		return { "rax" };
 	}
 
 	RegisterResult X86_64Emitter::emit_variable(const CoreVariableExpr & variable, AssemblyProgram & program){

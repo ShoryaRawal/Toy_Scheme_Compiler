@@ -8,17 +8,26 @@ namespace tscm{
 		output_ << "section .text\n\n";
 		output_ << "_start:\n";
 
+		output_ << "\tpush rbp\n";
+		output_ << "\tmov rbp, rsp\n";
+		output_ << "\tsub rbp, 128\n";
+	
 		for(const auto & instruction : program.instructions){
-			output_ << "	" << instruction.opcode;
+			output_ << "\t" << instruction.opcode;
 			
-			if(!instruction.operands.empty()){
-				for(std::size_t i = 0; i < instruction.operands.size(); ++i){
-					output_ << " " << instruction.operands[i];
-					if(i + 1 < instruction.operands.size()) output_ << ", ";
-				}
+			for(std::size_t i = 0; i < instruction.operands.size(); ++i){
+				output_ << " " << instruction.operands[i];
+				if(i + 1 < instruction.operands.size())
+					output_ << ", ";
 			}
 			output_ << "\n";
 		}
-		output_ << "	mov rdi, rax\n\tmov rax, 60\n\tsyscall";
+
+		output_ << "\tmov rsp, rbp\n";
+		output_ << "\tpop rbp\n\n";
+
+		output_ << "\tmov rdi, rax\n";
+		output_ << "\tmov rax, 60\n";
+		output_ << "\tsyscall\n";
 	}
 }
