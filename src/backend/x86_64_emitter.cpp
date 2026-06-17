@@ -10,10 +10,21 @@ namespace tscm{
 
 		stack_slots_.clear();
 		next_stack_offset_ = -8;
-		RegisterResult last_result;
-
+		/*RegisterResult last_result;
 		for (const auto & expr : program.expressions)
 			last_result = emit_expression(expr, assembly);
+		*/
+
+		RegisterResult last_result;
+		bool have_result = false;
+
+		for (const auto & expr : program.expressions){
+			if(have_result && !last_result.reg.empty() && last_result.reg != "rax"){
+				release_register(last_register.reg);
+			}
+			last_result = emit_expression(expr, assembly);
+			have_result = true;
+		}
 
 		if(!program.expressions.empty())
 			if(last_result.reg != "rax")
