@@ -20,7 +20,7 @@ namespace tscm{
 
 		for (const auto & expr : program.expressions){
 			if(have_result && !last_result.reg.empty() && last_result.reg != "rax"){
-				release_register(last_register.reg);
+				release_register(last_result.reg);
 			}
 			last_result = emit_expression(expr, assembly);
 			have_result = true;
