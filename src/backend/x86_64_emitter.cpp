@@ -49,6 +49,10 @@ namespace tscm{
 		free_registers_.push_back(reg);
 	}
 
+	std::string X86_64Emitter::make_label(const std::string & prefix){
+		return prefix + "_" + std::to_string(next_label_id_++);
+	}
+
 	RegisterResult X86_64Emitter::emit_expression(const CoreExprPtr & expr, AssemblyProgram & program){
 		return std::visit(
 			[&] (const auto & node) -> RegisterResult{
@@ -67,6 +71,8 @@ namespace tscm{
 					return emit_define(node, program);
 				} else if constexpr (std::is_same_v<T, CoreVariableExpr>){
 					return emit_variable(node, program);
+				} else if constexpr (std::is_same_v<T, CoreIfExpr>){
+					return emit_if(node, program);
 				} else throw std::runtime_error("x86_64 backend does not support this yet.");
 			},
 			expr -> value
@@ -105,6 +111,38 @@ namespace tscm{
 		return { reg };
 	}
 
+	RegisterResult X86_64Emitter::emit_if(const CoreIfExpr & expr, AssemblyProgram & program){
+		RegisterResult condition = emit_expression(expr.condition, program);
+
+		std::string else_label = make_label("else");
+		std::string end_label = make_label("endif");
+		
+		program.instructions.push_back({ "cmp", { condition.reg, "0" } });
+		program.instructions.push_back({ "je", { else_label } });
+
+		RegisterResult then_result = emit_expression(expr.then_branch, program);
+
+		if(then_result.reg != condition.reg){
+			program.instructions.push_back({
+				"mov", { condition.reg, then_result.reg }
+			});
+		}
+
+		program.instructions.push_back({ "jmp", { end_label } });
+		program.instructions.push_back({ else_label + ":", {} });
+
+		RegisterResult else_result = emit_expression(expr.else_branch, program);
+		
+		if(else_result.reg != condition.reg){
+			program.instructions.push_back({
+				"mov", { condition.reg, else_result.reg }
+			});
+		}
+
+		program.instructions.push_back({ end_label + ":", {} });
+		return condition;
+	}
+
 	RegisterResult X86_64Emitter::emit_call(const CoreCallExpr & call, AssemblyProgram & program){
 		if(call.arguments.size() != 2) 
 			throw std::runtime_error("Backend currently supports binary operations only");
@@ -115,27 +153,58 @@ namespace tscm{
 		RegisterResult lhs = emit_expression(call.arguments[0], program);
 		RegisterResult rhs = emit_expression(call.arguments[1], program);
 
-		if(callee -> name == "+"){
+		if (callee -> name == "+"){
 			program.instructions.push_back({
 				"add", { lhs.reg, rhs.reg }
 			});
 
 			release_register(rhs.reg);
 			return lhs;
-		}else if(callee -> name == "-"){
+		} else if (callee -> name == "-"){
 			program.instructions.push_back({
 				"sub", { lhs.reg, rhs.reg }
 			});
 			
 			release_register(rhs.reg);
 			return lhs;
-		}else if(callee -> name == "*"){
+		} else if (callee -> name == "*"){
 			program.instructions.push_back({
 				"imul", { lhs.reg, rhs.reg }
 			});
 			release_register(rhs.reg);
 			return lhs;
-		}else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
+		} else if (callee -> name == ">"){ //Add division ASAP
+			program.instructions.push_back({
+				"cmp", { lhs.reg, rhs.reg }
+			});
+
+			program.instructions.push_back({ "setg", { "al" } });
+			program.instructions.push_back({ "movzx", { lhs.reg, "al" } });
+
+			release_register(rhs.reg);
+			return lhs;
+		} else if (callee -> name == "<"){
+			program.instructions.push_back({
+				"cmp", { lhs.reg, rhs.reg }
+			});
+
+			program.instructions.push_back({ "setl", { "al" } });
+			program.instructions.push_back({ "movzx", { lhs.reg, "al" } });
+
+			release_register(rhs.reg);
+			return lhs;
+		} else if (callee -> name == "="){
+			program.instructions.push_back({
+				"cmp", { lhs.reg, rhs.reg }
+			});
+
+			program.instructions.push_back({ "sete", { "al" } });
+			program.instructions.push_back({ "movzx", { "al" } });
+			
+			release_register(rhs.reg);
+			return lhs;
+		
+		} else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
 		else throw std::runtime_error("Unsupported operator: " + callee -> name);
 	}
 

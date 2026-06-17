@@ -13,6 +13,10 @@ namespace tscm{
 		output_ << "\tsub rbp, 128\n";
 	
 		for(const auto & instruction : program.instructions){
+			if(!instruction.opcode.empty() && instruction.opcode.back() == ':'){
+				output_ << instruction.opcode << "\n";
+				continue;
+			}
 			output_ << "\t" << instruction.opcode;
 			
 			for(std::size_t i = 0; i < instruction.operands.size(); ++i){
