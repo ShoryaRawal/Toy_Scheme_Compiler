@@ -199,7 +199,7 @@ namespace tscm{
 			});
 
 			program.instructions.push_back({ "sete", { "al" } });
-			program.instructions.push_back({ "movzx", { "al" } });
+			program.instructions.push_back({ "movzx", { lhs.reg, "al" } });
 			
 			release_register(rhs.reg);
 			return lhs;
