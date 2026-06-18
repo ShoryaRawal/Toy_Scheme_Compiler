@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <variant>
+#include <iostream>
 
 namespace tscm{
 	AssemblyProgram X86_64Emitter::emit(const CoreProgram & program){
@@ -36,17 +37,20 @@ namespace tscm{
 	}
 
 	std::string X86_64Emitter::allocate_register() {
-		if(free_registers_.empty()) 
+		if(free_registers_.empty())
 			throw std::runtime_error("x86_64 register pool exhausted");
-		
+
 		std::string reg = free_registers_.back();
 		free_registers_.pop_back();
+
+		std::cout << "ALLOC " << reg << "\n";
 
 		return reg;
 	}
 
 	void X86_64Emitter::release_register(const std::string & reg){
 		free_registers_.push_back(reg);
+		std::cout << "FREE " << reg << "\n";
 	}
 
 	std::string X86_64Emitter::make_label(const std::string & prefix){
@@ -116,9 +120,11 @@ namespace tscm{
 
 		std::string else_label = make_label("else");
 		std::string end_label = make_label("endif");
-		
+
 		program.instructions.push_back({ "cmp", { condition.reg, "0" } });
 		program.instructions.push_back({ "je", { else_label } });
+
+		release_register(condition.reg);
 
 		RegisterResult then_result = emit_expression(expr.then_branch, program);
 
@@ -132,11 +138,13 @@ namespace tscm{
 		program.instructions.push_back({ else_label + ":", {} });
 
 		RegisterResult else_result = emit_expression(expr.else_branch, program);
-		
+
 		if(else_result.reg != condition.reg){
 			program.instructions.push_back({
 				"mov", { condition.reg, else_result.reg }
 			});
+
+			release_register(else_result.reg);
 		}
 
 		program.instructions.push_back({ end_label + ":", {} });
@@ -144,7 +152,7 @@ namespace tscm{
 	}
 
 	RegisterResult X86_64Emitter::emit_call(const CoreCallExpr & call, AssemblyProgram & program){
-		if(call.arguments.size() != 2) 
+		if(call.arguments.size() != 2)
 			throw std::runtime_error("Backend currently supports binary operations only");
 
 		const auto * callee = std::get_if<CoreVariableExpr>(& call.callee -> value);
@@ -164,7 +172,7 @@ namespace tscm{
 			program.instructions.push_back({
 				"sub", { lhs.reg, rhs.reg }
 			});
-			
+
 			release_register(rhs.reg);
 			return lhs;
 		} else if (callee -> name == "*"){
@@ -200,10 +208,10 @@ namespace tscm{
 
 			program.instructions.push_back({ "sete", { "al" } });
 			program.instructions.push_back({ "movzx", { lhs.reg, "al" } });
-			
+
 			release_register(rhs.reg);
 			return lhs;
-		
+
 		} else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
 		else throw std::runtime_error("Unsupported operator: " + callee -> name);
 	}
