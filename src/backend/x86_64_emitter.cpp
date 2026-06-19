@@ -181,7 +181,19 @@ namespace tscm{
 			});
 			release_register(rhs.reg);
 			return lhs;
-		} else if (callee -> name == ">"){ //Add division ASAP
+		} else if (callee -> name == "/"){
+			program.instructions.push_back({
+				"mov", { "rax", lhs.reg }
+			});
+
+			program.instructions.push_back({ "cqo", {} });
+			program.instructions.push_back({ "idiv", { rhs.reg } });
+			
+			release_register(lhs.reg);
+			release_register(rhs.reg);
+
+			return { "rax" };
+		}else if (callee -> name == ">"){
 			program.instructions.push_back({
 				"cmp", { lhs.reg, rhs.reg }
 			});
@@ -212,8 +224,7 @@ namespace tscm{
 			release_register(rhs.reg);
 			return lhs;
 
-		} else if(callee -> name == "/") throw std::runtime_error("division not implemented yet.");
-		else throw std::runtime_error("Unsupported operator: " + callee -> name);
+		} else throw std::runtime_error("Unsupported operator: " + callee -> name);
 	}
 
 }
